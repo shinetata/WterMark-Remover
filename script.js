@@ -86,6 +86,18 @@ class WatermarkRemover {
                 e.preventDefault();
             }
         }, { passive: false });
+        
+        // 监听窗口大小变化
+        window.addEventListener('resize', () => {
+            if (this.originalImageData) {
+                // 重新计算canvas尺寸
+                const img = new Image();
+                img.onload = () => {
+                    this.setupCanvas(img);
+                };
+                img.src = this.canvas.toDataURL();
+            }
+        });
     }
     
     handleFileSelect(e) {
@@ -107,10 +119,15 @@ class WatermarkRemover {
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
+                console.log('图片加载成功:', img.width, 'x', img.height);
                 this.setupCanvas(img);
                 this.showEditor();
                 this.showLoading(false);
-                this.showToast('图片加载成功', 'success');
+                this.showToast(`图片加载成功 (${img.width}x${img.height})`, 'success');
+            };
+            img.onerror = () => {
+                this.showLoading(false);
+                this.showToast('图片加载失败', 'error');
             };
             img.src = e.target.result;
         };
@@ -119,10 +136,10 @@ class WatermarkRemover {
     
     setupCanvas(img) {
         // 计算适合屏幕的尺寸
-        const maxWidth = window.innerWidth - 40;
-        const maxHeight = window.innerHeight * 0.6;
+        const containerWidth = window.innerWidth - 40;
+        const containerHeight = window.innerHeight * 0.6;
         
-        let { width, height } = this.calculateSize(img.width, img.height, maxWidth, maxHeight);
+        let { width, height } = this.calculateSize(img.width, img.height, containerWidth, containerHeight);
         
         // 设置canvas尺寸
         this.canvas.width = width;
@@ -138,6 +155,9 @@ class WatermarkRemover {
         
         // 保存到历史
         this.saveState();
+        
+        // 更新canvas容器的样式以匹配实际尺寸
+        this.updateCanvasContainerSize(width, height);
     }
     
     calculateSize(imgWidth, imgHeight, maxWidth, maxHeight) {
@@ -157,6 +177,15 @@ class WatermarkRemover {
         }
         
         return { width: Math.round(width), height: Math.round(height) };
+    }
+    
+    updateCanvasContainerSize(canvasWidth, canvasHeight) {
+        const container = document.querySelector('.canvas-container');
+        if (container) {
+            // 设置容器的最小高度为canvas的实际高度
+            container.style.minHeight = `${canvasHeight}px`;
+            container.style.height = `${canvasHeight}px`;
+        }
     }
     
     getEventPos(e) {
