@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>智能水印去除工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🖼️ 智能水印去除</h1>
+            <p>轻松去除图片水印，支持多种编辑工具</p>
+        </header>
+
+        <!-- 上传区域 -->
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📎</div>
+                <div class="upload-text">
+                    <h3>选择或拖拽图片</h3>
+                    <p>支持 JPG、PNG、WebP 格式</p>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    选择图片
+                </button>
+            </div>
+        </div>
+
+        <!-- 编辑区域 -->
+        <div class="editor-section" id="editorSection" style="display: none;">
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <canvas id="overlayCanvas"></canvas>
+            </div>
+
+            <!-- 工具栏 -->
+            <div class="toolbar">
+                <div class="tool-group">
+                    <h4>去除工具</h4>
+                    <div class="tool-buttons">
+                        <button class="tool-btn active" data-tool="clone" title="克隆修复">
+                            🔧 克隆
+                        </button>
+                        <button class="tool-btn" data-tool="blur" title="模糊处理">
+                            🌀 模糊
+                        </button>
+                        <button class="tool-btn" data-tool="fill" title="颜色填充">
+                            🎨 填充
+                        </button>
+                        <button class="tool-btn" data-tool="eraser" title="橡皮擦">
+                            🧽 擦除
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tool-group">
+                    <h4>画笔大小</h4>
+                    <div class="brush-size">
+                        <input type="range" id="brushSize" min="5" max="100" value="20">
+                        <span id="brushSizeValue">20px</span>
+                    </div>
+                </div>
+
+                <div class="tool-group">
+                    <h4>操作</h4>
+                    <div class="action-buttons">
+                        <button class="action-btn" id="undoBtn" title="撤销">
+                            ↶ 撤销
+                        </button>
+                        <button class="action-btn" id="redoBtn" title="重做">
+                            ↷ 重做
+                        </button>
+                        <button class="action-btn" id="resetBtn" title="重置">
+                            🔄 重置
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部按钮 -->
+            <div class="bottom-actions">
+                <button class="secondary-btn" id="backBtn">
+                    ← 重新选择
+                </button>
+                <button class="primary-btn" id="saveBtn">
+                    💾 保存到相册
+                </button>
+            </div>
+        </div>
+
+        <!-- 加载提示 -->
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>处理中...</p>
+        </div>
+
+        <!-- 提示信息 -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
